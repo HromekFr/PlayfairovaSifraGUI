@@ -85,15 +85,15 @@ namespace PlayfairovaSifraGUI
             string textDvojice = Functions.Double(insertX);
             dvojiceText.Text = textDvojice;
 
-            string textSifrovani = Functions.InsertX(Functions.RemoveWhiteSpace(Functions.RemoveDiacritism(Functions.RemoveSpecialChars(vstupniText.ToUpper().Replace("W", "V")))));
-            //Do for cyklu posilat text s mezerami a koretne pridanym X, aby se mohlo dat pridat spravne + GHF
+            string textSifrovani = returnSpaces;
+            //Šifrování delších slov, textSifrovani nejde do cyklu se spravnými mezerami, pridání X nefunguje, u slov jako A BCD AB CD funguje, neoddělávat X na konci desifrovani ?
             string output = "";
 
             for (int i = 0; i < textSifrovani.Length; i += 2)
             {
                 if (spaceSecondChar)
                 {
-                    int correctSpacePosition = i - 3;
+                    int correctSpacePosition = i - 2;
                     output = output.Insert(correctSpacePosition, "GHF");
                     spaceSecondChar = false;
                 }
@@ -106,13 +106,13 @@ namespace PlayfairovaSifraGUI
                     output += "GHF";
                     firstChar = secondChar;
                     secondChar = textSifrovani[i + 2];
-                    i += 2;
+                    i++;
                 }
                 else if (Char.IsWhiteSpace(secondChar))
                 {
                     secondChar = textSifrovani[i + 2];
                     spaceSecondChar = true;
-                    i += 2;
+                    i++;
                 }
 
                 IndexesOf2DArray myIndexesOf2DArray1 = new IndexesOf2DArray(arrayTable, firstChar);
@@ -141,22 +141,37 @@ namespace PlayfairovaSifraGUI
         private void Desifruj_Click(object sender, RoutedEventArgs e)
         {
             var textDesif = Functions.RemoveWhiteSpace(zasifText.Text);
-
+            bool secondCharSpace = false;
             string output = "";
 
             for (int i = 0; i < textDesif.Length; i += 2)
             {
-                bool isGHF = textDesif[i] == 'G' && textDesif[i + 1] == 'H' && textDesif[i + 2] == 'F';
-                if (isGHF)
+                if (secondCharSpace)
+                {
+                    int correctSpacePosition = i - 4;
+                    output = output.Insert(correctSpacePosition, " ");
+                    spaceSecondChar = false;
+                }
+
+                char firstChar = textDesif[i];
+                char secondChar = textDesif[i + 1];
+
+                bool isGHF_firstChar = textDesif[i] == 'G' && textDesif[i + 1] == 'H' && textDesif[i + 2] == 'F';
+                bool isGHF_secondChar = textDesif[i + 1] == 'G' && textDesif[i + 2] == 'H' && textDesif[i + 3] == 'F';
+
+                if (isGHF_firstChar)
                 {
                     output += ' ';
                     i++;
 
                     continue;
                 }
-
-                char firstChar = textDesif[i];
-                char secondChar = textDesif[i + 1];
+                else if (isGHF_secondChar)
+                {
+                    secondCharSpace = true;
+                    secondChar = textDesif[i + 4];
+                    i += 3;
+                }
 
                 IndexesOf2DArray myIndexesOf2DArray1 = new IndexesOf2DArray(arrayTable, firstChar);
                 IndexesOf2DArray myIndexesOf2DArray2 = new IndexesOf2DArray(arrayTable, secondChar);
