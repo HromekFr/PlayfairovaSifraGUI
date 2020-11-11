@@ -52,6 +52,7 @@ namespace PlayfairovaSifraGUI
                 {
                     if (str[i].Equals(str[i + 1]))
                     {
+                        saveSpacesTemp = saveSpacesTemp.Insert(i + 1, "P");
                         str = str.Insert(i + 1, "X");
                     }
                 }
@@ -203,11 +204,11 @@ namespace PlayfairovaSifraGUI
             {
                 if (Char.IsWhiteSpace(text[i]))
                 {
-                    saveSpacesTemp += "B";
+                    saveSpacesTemp += "M";
                 }
                 else
                 {
-                    saveSpacesTemp += "S";
+                    saveSpacesTemp += "P";
                 }
             }
         }
@@ -218,7 +219,7 @@ namespace PlayfairovaSifraGUI
 
             for (int i = 0; i < saveSpacesTemp.Length; i++)
             {
-                if (saveSpacesTemp[i] == 'B')
+                if (saveSpacesTemp[i] == 'M')
                 {
                     correctSpaces = correctSpaces.Insert(i, " ");
                 }
