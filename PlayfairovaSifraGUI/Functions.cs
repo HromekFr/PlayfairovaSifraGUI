@@ -6,7 +6,6 @@ namespace PlayfairovaSifraGUI
 {
     public class Functions
     {
-        private static string saveSpacesTemp = "";
 
         public static string RemoveDiacritism(string Text)
         {
@@ -52,7 +51,6 @@ namespace PlayfairovaSifraGUI
                 {
                     if (str[i].Equals(str[i + 1]))
                     {
-                        saveSpacesTemp = saveSpacesTemp.Insert(i + 1, "P");
                         str = str.Insert(i + 1, "X");
                     }
                 }
@@ -195,38 +193,6 @@ namespace PlayfairovaSifraGUI
                 i++;
             }
             return str;
-        }
-
-        public static void SaveSpaces(string text)
-        {
-
-            for (int i = 0; i < text.Length; i++)
-            {
-                if (Char.IsWhiteSpace(text[i]))
-                {
-                    saveSpacesTemp += "M";
-                }
-                else
-                {
-                    saveSpacesTemp += "P";
-                }
-            }
-        }
-
-        public static string ReturnSpaces(string text)
-        {
-            string correctSpaces = text;
-
-            for (int i = 0; i < saveSpacesTemp.Length; i++)
-            {
-                if (saveSpacesTemp[i] == 'M')
-                {
-                    correctSpaces = correctSpaces.Insert(i, " ");
-                }
-            }
-
-            saveSpacesTemp = "";
-            return correctSpaces;
         }
 
     }

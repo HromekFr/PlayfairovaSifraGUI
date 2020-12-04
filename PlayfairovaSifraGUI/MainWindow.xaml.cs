@@ -93,45 +93,22 @@ namespace PlayfairovaSifraGUI
             else
             {
                 string vstupniText = otevrenyText.Text;
-                Functions.SaveSpaces(vstupniText);
                 string replaceW = vstupniText.ToUpper().Replace("W", "V");
                 string removeSpecialChars = Functions.RemoveSpecialChars(replaceW);
                 string removeDiacritism = Functions.RemoveDiacritism(removeSpecialChars);
                 string removeWhiteSpace = Functions.RemoveWhiteSpace(removeDiacritism);
                 string insertX = Functions.InsertX(removeWhiteSpace);
-                string returnSpaces = Functions.ReturnSpaces(insertX);
                 string textDvojice = Functions.Double(insertX);
                 dvojiceText.Text = textDvojice;
 
-                string textSifrovani = returnSpaces;
+                string textSifrovani = insertX;
                 //Šifrování delších slov, textSifrovani nejde do cyklu se spravnými mezerami, pridání X nefunguje, u slov jako A BCD AB CD funguje, neoddělávat X na konci desifrovani ?
                 string output = "";
 
                 for (int i = 0; i < textSifrovani.Length; i += 2)
                 {
-                    if (spaceSecondChar)
-                    {
-                        int correctSpacePosition = i - 2;
-                        output = output.Insert(correctSpacePosition, "GHF");
-                        spaceSecondChar = false;
-                    }
-
                     char firstChar = textSifrovani[i];
                     char secondChar = textSifrovani[i + 1];
-
-                    if (Char.IsWhiteSpace(firstChar))
-                    {
-                        output += "GHF";
-                        firstChar = secondChar;
-                        secondChar = textSifrovani[i + 2];
-                        i++;
-                    }
-                    else if (Char.IsWhiteSpace(secondChar))
-                    {
-                        secondChar = textSifrovani[i + 2];
-                        spaceSecondChar = true;
-                        i++;
-                    }
 
                     IndexesOf2DArray myIndexesOf2DArray1 = new IndexesOf2DArray(arrayTable, firstChar);
                     IndexesOf2DArray myIndexesOf2DArray2 = new IndexesOf2DArray(arrayTable, secondChar);
@@ -170,37 +147,12 @@ namespace PlayfairovaSifraGUI
             else
             {
                 var textDesif = Functions.RemoveWhiteSpace(zasifText.Text);
-                bool secondCharSpace = false;
                 string output = "";
 
                 for (int i = 0; i < textDesif.Length; i += 2)
                 {
-                    if (secondCharSpace)
-                    {
-                        int correctSpacePosition = i - 4;
-                        output = output.Insert(correctSpacePosition, " ");
-                        secondCharSpace = false;
-                    }
-
                     char firstChar = textDesif[i];
                     char secondChar = textDesif[i + 1];
-
-                    bool isGHF_firstChar = textDesif[i] == 'G' && textDesif[i + 1] == 'H' && textDesif[i + 2] == 'F';
-                    bool isGHF_secondChar = textDesif[i + 1] == 'G' && textDesif[i + 2] == 'H' && textDesif[i + 3] == 'F';
-
-                    if (isGHF_firstChar)
-                    {
-                        output += ' ';
-                        i++;
-
-                        continue;
-                    }
-                    else if (isGHF_secondChar)
-                    {
-                        secondCharSpace = true;
-                        secondChar = textDesif[i + 4];
-                        i += 3;
-                    }
 
                     IndexesOf2DArray myIndexesOf2DArray1 = new IndexesOf2DArray(arrayTable, firstChar);
                     IndexesOf2DArray myIndexesOf2DArray2 = new IndexesOf2DArray(arrayTable, secondChar);
@@ -223,7 +175,6 @@ namespace PlayfairovaSifraGUI
                 }
 
                 surDesifText.Text = output;
-                desifText.Text = output.Replace("X", "");
             }
             
         }
