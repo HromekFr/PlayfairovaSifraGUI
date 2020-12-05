@@ -22,7 +22,6 @@ namespace PlayfairovaSifraGUI
     public partial class MainWindow : Window
     {
         private char[,] arrayTable;
-        private bool spaceSecondChar = false;
         private bool tableCreated = false;
 
         public MainWindow()
@@ -32,7 +31,7 @@ namespace PlayfairovaSifraGUI
 
         private char[,] InitializeTable()
         {
-            string contentOfTable = Functions.AddContentToTable(Functions.RemoveWhiteSpace(klic.Text.ToUpper()));
+            string contentOfTable = Functions.AddContentToTable(Functions.RemoveWhiteSpace(Functions.RemoveSpecialChars(Functions.RemoveDiacritism(klic.Text.ToUpper()))));
             arrayTable = new char[5, 5];
 
             for (int i = 0; i < arrayTable.GetLength(0); i++)
@@ -96,9 +95,11 @@ namespace PlayfairovaSifraGUI
                 string replaceW = vstupniText.ToUpper().Replace("W", "V");
                 string removeSpecialChars = Functions.RemoveSpecialChars(replaceW);
                 string removeDiacritism = Functions.RemoveDiacritism(removeSpecialChars);
+                Functions.SaveSpaces(removeDiacritism);
                 string removeWhiteSpace = Functions.RemoveWhiteSpace(removeDiacritism);
-                string insertX = Functions.InsertX(removeWhiteSpace);
-                string textDvojice = Functions.Double(insertX);
+                string fixDoubleChars = Functions.FixDoubleChars(removeWhiteSpace);
+                string insertX = Functions.InsertX(fixDoubleChars);
+                string textDvojice = Functions.MakeDoubles(insertX);
                 dvojiceText.Text = textDvojice;
 
                 string textSifrovani = insertX;
@@ -114,22 +115,22 @@ namespace PlayfairovaSifraGUI
                     IndexesOf2DArray myIndexesOf2DArray2 = new IndexesOf2DArray(arrayTable, secondChar);
                     bool rowRule = myIndexesOf2DArray1.getRowIndex() == myIndexesOf2DArray2.getRowIndex();
                     bool columnRule = myIndexesOf2DArray1.getColumnIndex() == myIndexesOf2DArray2.getColumnIndex();
-                    bool diagonalRule = myIndexesOf2DArray1.getRowIndex() != myIndexesOf2DArray2.getRowIndex() && myIndexesOf2DArray1.getColumnIndex() != myIndexesOf2DArray2.getColumnIndex();
+                    bool diagonalRule = myIndexesOf2DArray1.getRowIndex() != myIndexesOf2DArray2.getRowIndex() && myIndexesOf2DArray1.getColumnIndex    () != myIndexesOf2DArray2.getColumnIndex();
                     if (diagonalRule)
                     {
-                        output += Functions.DiagonalRule(firstChar, secondChar, arrayTable);
-                    }
+                        output += TableRules.DiagonalRule(firstChar, secondChar, arrayTable);
+                    }               
                     else if (rowRule)
                     {
-                        output += Functions.RowRule(firstChar, secondChar, arrayTable, 'E');
+                        output += TableRules.RowRule(firstChar, secondChar, arrayTable, 'E');
                     }
                     else if (columnRule)
                     {
-                        output += Functions.ColumnRule(firstChar, secondChar, arrayTable, 'E');
+                        output += TableRules.ColumnRule(firstChar, secondChar, arrayTable, 'E');
                     }
                 }
-
-                zasifText.Text = Functions.Fifths(output);
+                string textWithSpecialSeqeunces = Functions.InsertSpecialSequences(output, 'E');
+                zasifText.Text = Functions.MakeFifths(textWithSpecialSeqeunces);
             }
 
         }
@@ -146,7 +147,7 @@ namespace PlayfairovaSifraGUI
             }
             else
             {
-                var textDesif = Functions.RemoveWhiteSpace(zasifText.Text);
+                var textDesif = Functions.SaveSpecialCharsPosition(Functions.RemoveWhiteSpace(zasifText.Text));
                 string output = "";
 
                 for (int i = 0; i < textDesif.Length; i += 2)
@@ -162,19 +163,20 @@ namespace PlayfairovaSifraGUI
 
                     if (diagonalRule)
                     {
-                        output += Functions.DiagonalRule(firstChar, secondChar, arrayTable);
+                        output += TableRules.DiagonalRule(firstChar, secondChar, arrayTable);
                     }
                     else if (rowRule)
                     {
-                        output += Functions.RowRule(firstChar, secondChar, arrayTable, 'D');
+                        output += TableRules.RowRule(firstChar, secondChar, arrayTable, 'D');
                     }
                     else if (columnRule)
                     {
-                        output += Functions.ColumnRule(firstChar, secondChar, arrayTable, 'D');
+                        output += TableRules.ColumnRule(firstChar, secondChar, arrayTable, 'D');
                     }
                 }
-
-                surDesifText.Text = output;
+                var surovyDesifText = Functions.InsertSpecialSequences(output, 'D');
+                surDesifText.Text = surovyDesifText;
+                desifText.Text = Functions.ReplaceSpecialSequences(surovyDesifText);
             }
             
         }
