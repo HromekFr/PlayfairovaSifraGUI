@@ -53,8 +53,22 @@ namespace PlayfairovaSifraGUI
                 {
                     if (str[i].Equals(str[i + 1]))
                     {
-                        savedSpaces = savedSpaces.Insert(i + 1, "P");
-                        str = str.Insert(i + 1, "X");
+                        if (str[i] == 'X' && str[i + 1] == 'X')
+                        {
+                            savedSpaces = savedSpaces.Insert(i + 1, "P");
+                            str = str.Insert(i + 1, "Q");
+                        }
+                        else if (str[i] == 'Q' && str[i + 1] == 'Q')
+                        {
+                            savedSpaces = savedSpaces.Insert(i + 1, "P");
+                            str = str.Insert(i + 1, "W");
+                        }
+                        else
+                        {
+                            savedSpaces = savedSpaces.Insert(i + 1, "P");
+                            str = str.Insert(i + 1, "X");
+                        }
+
                     }
                 }
             }
@@ -74,7 +88,7 @@ namespace PlayfairovaSifraGUI
                 {
                     str += 'X';
                 }
-                savedSpaces = savedSpaces.Insert(str.Length + 1, "P");
+                savedSpaces = savedSpaces.Insert(savedSpaces.Length, "P");
                 return str;
 
             }
@@ -98,7 +112,7 @@ namespace PlayfairovaSifraGUI
             return outputDistinct;
         }
 
-        
+
 
         public static string MakeFifths(string str)
         {
@@ -228,6 +242,31 @@ namespace PlayfairovaSifraGUI
                 }
             }
 
+            return output;
+        }
+
+        public static string RawToCorrectText(string text)
+        {
+            string output = "";
+            for (int i = 0; i < text.Length; i += 2)
+            {
+                char firstChar = text[i];
+                char secondChar = text[i + 1];
+
+                if (firstChar != 'X' && secondChar != 'X')
+                {
+                    output += $"{firstChar}{secondChar}";
+                }
+                else if (firstChar != 'X' && secondChar == 'X')
+                {
+                    output += firstChar;
+                }
+                else if (firstChar == 'X' && secondChar == 'Q')
+                {
+                    output += firstChar;
+                }
+
+            }
             return output;
         }
     }

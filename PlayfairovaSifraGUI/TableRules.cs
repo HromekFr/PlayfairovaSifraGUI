@@ -45,11 +45,27 @@ namespace PlayfairovaSifraGUI
             }
             else if (decryptOrEncrypt == 'D')
             {
-                char firstCharEncrypted =
-                arrayTable[myIndexesOf2DArray1.getRowIndex(), (myIndexesOf2DArray1.getColumnIndex() - 1) % arrayTable.GetLength(1)];
+                char firstCharEncrypted;
+                char secondCharEncrypted;
+                if (myIndexesOf2DArray1.getColumnIndex() == 0)
+                {
+                    firstCharEncrypted = arrayTable[myIndexesOf2DArray1.getColumnIndex(), 4];
+                }
+                else
+                {
+                    firstCharEncrypted = arrayTable[myIndexesOf2DArray1.getRowIndex(), (myIndexesOf2DArray1.getColumnIndex() - 1) % arrayTable.GetLength(1)];
 
-                char secondCharEncrypted =
-                    arrayTable[myIndexesOf2DArray2.getRowIndex(), (myIndexesOf2DArray2.getColumnIndex() - 1) % arrayTable.GetLength(1)];
+                }
+
+                if (myIndexesOf2DArray2.getColumnIndex() == 0)
+                {
+                    secondCharEncrypted = arrayTable[myIndexesOf2DArray2.getColumnIndex(), 4];
+                }
+                else
+                {
+                    secondCharEncrypted = arrayTable[myIndexesOf2DArray2.getRowIndex(), (myIndexesOf2DArray2.getColumnIndex() - 1) % arrayTable.GetLength(1)];
+                }
+ 
                 output = $"{firstCharEncrypted}{secondCharEncrypted}";
             }
 

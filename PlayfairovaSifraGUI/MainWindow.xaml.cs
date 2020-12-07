@@ -103,7 +103,6 @@ namespace PlayfairovaSifraGUI
                 dvojiceText.Text = textDvojice;
 
                 string textSifrovani = insertX;
-                //Šifrování delších slov, textSifrovani nejde do cyklu se spravnými mezerami, pridání X nefunguje, u slov jako A BCD AB CD funguje, neoddělávat X na konci desifrovani ?
                 string output = "";
 
                 for (int i = 0; i < textSifrovani.Length; i += 2)
@@ -176,7 +175,7 @@ namespace PlayfairovaSifraGUI
                 }
                 var surovyDesifText = Functions.InsertSpecialSequences(output, 'D');
                 surDesifText.Text = surovyDesifText;
-                desifText.Text = Functions.ReplaceSpecialSequences(surovyDesifText);
+                desifText.Text = Functions.RawToCorrectText(Functions.ReplaceSpecialSequences(surovyDesifText));
             }
             
         }
