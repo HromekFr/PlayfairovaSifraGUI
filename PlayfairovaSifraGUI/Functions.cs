@@ -9,19 +9,23 @@ namespace PlayfairovaSifraGUI
         private static string savedSpaces = "";
         private static string savedSpecialChars = "";
 
-        public static string RemoveDiacritism(string Text)
+       private static string RemoveDiacritism(string Text)
         {
             string stringFormD = Text.Normalize(NormalizationForm.FormD);
             StringBuilder retVal = new StringBuilder();
             for (int index = 0; index < stringFormD.Length; index++)
             {
                 if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(stringFormD[index]) != System.Globalization.UnicodeCategory.NonSpacingMark)
-                    retVal.Append(stringFormD[index]);
+                {
+                    char nextChar = stringFormD[index];
+                    retVal.Append(nextChar);
+                }
+                    
             }
             return retVal.ToString().Normalize(NormalizationForm.FormC);
         }
 
-        public static string RemoveSpecialChars(string str)
+        private static string RemoveSpecialChars(string str)
         {
             string[] chars = new string[] { ",", ".", "/", "!", "@", "#", "$", "%", "^", "&", "*", "'", ";", "_", "(", ")", ":", "|", "[", "]", "?", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
             for (int i = 0; i < chars.Length; i++)
@@ -45,7 +49,7 @@ namespace PlayfairovaSifraGUI
             return str;
         }
 
-        public static string FixDoubleChars(string str)
+        private static string FixDoubleChars(string str)
         {
             for (int i = 0; i <= str.Length; i++)
             {
@@ -76,7 +80,7 @@ namespace PlayfairovaSifraGUI
             return str;
         }
 
-        public static string InsertX(string str)
+        private static string InsertX(string str)
         {
             if (str.Length % 2 != 0)
             {
@@ -97,7 +101,7 @@ namespace PlayfairovaSifraGUI
                 return str;
             }
         }
-        public static string RemoveWhiteSpace(string str)
+        private static string RemoveWhiteSpace(string str)
         {
             string output = str.Replace(" ", "");
             return output;
@@ -124,7 +128,7 @@ namespace PlayfairovaSifraGUI
             return str;
         }
 
-        public static void SaveSpaces(string text)
+        private static void SaveSpaces(string text)
         {
             savedSpaces = "";
             for (int i = 0; i < text.Length; i++)
@@ -138,6 +142,26 @@ namespace PlayfairovaSifraGUI
                     savedSpaces += "P";
                 }
             }
+        }
+
+        private static string ReturnSpaces(string text)
+        {
+            int correctionIndex = 0;
+            string output = "";
+            for (int i = 0; i < text.Length + correctionIndex; i++)
+            {
+                if (savedSpaces[i] == 'P')
+                {
+                    output += text[i - correctionIndex];
+                }
+                else if(savedSpaces[i] == 'M')
+                {
+                    output += ' ';
+                    correctionIndex++;
+                }
+            }
+            savedSpaces = "";
+            return output;
         }
 
         public static string InsertSpecialSequences(string text, char encryptOrDecrypt)
@@ -215,7 +239,7 @@ namespace PlayfairovaSifraGUI
             return output;
         }
 
-        public static string SaveSpecialCharsPosition(string text)
+        private static string SaveSpecialCharsPosition(string text)
         {
             string output = "";
             for (int i = 0; i < text.Length; i++)
@@ -248,10 +272,12 @@ namespace PlayfairovaSifraGUI
         public static string RawToCorrectText(string text)
         {
             string output = "";
-            for (int i = 0; i < text.Length; i += 2)
+            Functions.SaveSpaces(text);
+            string input = RemoveWhiteSpace(text);
+            for (int i = 0; i < input.Length; i += 2)
             {
-                char firstChar = text[i];
-                char secondChar = text[i + 1];
+                char firstChar = input[i];
+                char secondChar = input[i + 1];
 
                 if (firstChar != 'X' && secondChar != 'X')
                 {
@@ -265,9 +291,52 @@ namespace PlayfairovaSifraGUI
                 {
                     output += firstChar;
                 }
+                else if (firstChar == 'X' && secondChar != 'X')
+                {
+                    output += secondChar;
+                }
+                
 
             }
-            return output;
+            return Functions.ReturnSpaces(output);
+        }
+
+        public static string CorrectInput(string text, char inputType)
+        {
+            if (inputType == 'E')
+            {
+                string replaceW = text.ToUpper().Replace("W", "V");
+                string removeSpecialChars = RemoveSpecialChars(replaceW);
+                string removeDiacritism = RemoveDiacritism(removeSpecialChars);
+                Functions.SaveSpaces(removeDiacritism);
+                string removeWhiteSpace = RemoveWhiteSpace(removeDiacritism);
+                string fixDoubleChars = FixDoubleChars(removeWhiteSpace);
+                string insertX = InsertX(fixDoubleChars);
+                return insertX;
+            }
+            else if (inputType == 'D')
+            {
+                string removeWhiteSpace = RemoveWhiteSpace(text.ToUpper()); ;
+                string saveSpecialChars = SaveSpecialCharsPosition(removeWhiteSpace);
+                return saveSpecialChars;
+            }
+            else if (inputType == 'C')
+            {
+                string removeSpecialChars = RemoveSpecialChars(text.ToUpper());
+                string removeDiacritism = RemoveDiacritism(removeSpecialChars);
+                string removeWhiteSpace = RemoveWhiteSpace(removeDiacritism);
+                string outputDistinct = AddContentToTable(removeWhiteSpace);
+                return outputDistinct;
+            }
+            else if (inputType == 'K')
+            {
+                string outputDistinct = new String(text.ToUpper().Distinct().ToArray());
+                string removeSpecialChars = RemoveSpecialChars(text.ToUpper());
+                string removeDiacritism = RemoveDiacritism(removeSpecialChars);
+                string removeWhiteSpace = RemoveWhiteSpace(removeDiacritism);
+                return removeWhiteSpace;
+            }
+            return text;
         }
     }
 

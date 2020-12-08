@@ -23,6 +23,8 @@ namespace PlayfairovaSifraGUI
     {
         private char[,] arrayTable;
         private bool tableCreated = false;
+        private string contentOfTable;
+        private string key;
 
         public MainWindow()
         {
@@ -31,7 +33,7 @@ namespace PlayfairovaSifraGUI
 
         private char[,] InitializeTable()
         {
-            string contentOfTable = Functions.AddContentToTable(Functions.RemoveWhiteSpace(Functions.RemoveSpecialChars(Functions.RemoveDiacritism(klic.Text.ToUpper()))));
+            contentOfTable = Functions.AddContentToTable(key);
             arrayTable = new char[5, 5];
 
             for (int i = 0; i < arrayTable.GetLength(0); i++)
@@ -47,7 +49,9 @@ namespace PlayfairovaSifraGUI
 
         private void VytvorTabulku_Click(object sender, RoutedEventArgs e)
         {
-            if (klic.Text.Length < 8)
+            key = Functions.CorrectInput(klic.Text, 'K');
+
+            if (key.Length < 8)
             {
                 MessageBox.Show("Šifrovací klíč musí mít aspoň 8 znaků");
             }
@@ -55,27 +59,27 @@ namespace PlayfairovaSifraGUI
             {
                 arrayTable = InitializeTable();
 
-                var t = new DataTable();
+                var dataTable = new DataTable();
                 int columns = arrayTable.GetLength(0);
                 int rows = arrayTable.GetLength(1);
 
                 for (var c = 0; c < columns; c++)
                 {
-                    t.Columns.Add(new DataColumn());
+                    dataTable.Columns.Add(new DataColumn());
                 }
 
                 for (var r = 0; r < rows; r++)
                 {
-                    var newRow = t.NewRow();
+                    var newRow = dataTable.NewRow();
                     for (var c = 0; c < columns; c++)
                     {
                         newRow[c] = arrayTable[r, c];
                     }
-                    t.Rows.Add(newRow);
+                    dataTable.Rows.Add(newRow);
                 }
 
                 tableCreated = true;
-                sifrovaciTabulka.ItemsSource = t.DefaultView;
+                sifrovaciTabulka.ItemsSource = dataTable.DefaultView;
             }
         }
 
@@ -91,18 +95,13 @@ namespace PlayfairovaSifraGUI
             }
             else
             {
-                string vstupniText = otevrenyText.Text;
-                string replaceW = vstupniText.ToUpper().Replace("W", "V");
-                string removeSpecialChars = Functions.RemoveSpecialChars(replaceW);
-                string removeDiacritism = Functions.RemoveDiacritism(removeSpecialChars);
-                Functions.SaveSpaces(removeDiacritism);
-                string removeWhiteSpace = Functions.RemoveWhiteSpace(removeDiacritism);
-                string fixDoubleChars = Functions.FixDoubleChars(removeWhiteSpace);
-                string insertX = Functions.InsertX(fixDoubleChars);
-                string textDvojice = Functions.MakeDoubles(insertX);
+                string inputText = otevrenyText.Text;
+                string correctText = Functions.CorrectInput(inputText, 'E');
+                string textDvojice = Functions.MakeDoubles(correctText);
                 dvojiceText.Text = textDvojice;
 
-                string textSifrovani = insertX;
+                string textSifrovani = correctText;
+
                 string output = "";
 
                 for (int i = 0; i < textSifrovani.Length; i += 2)
@@ -146,7 +145,7 @@ namespace PlayfairovaSifraGUI
             }
             else
             {
-                var textDesif = Functions.SaveSpecialCharsPosition(Functions.RemoveWhiteSpace(zasifText.Text));
+                var textDesif = Functions.CorrectInput(zasifText.Text, 'D');
                 string output = "";
 
                 for (int i = 0; i < textDesif.Length; i += 2)
